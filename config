@@ -1,0 +1,22 @@
+Host bastion
+  HostName 13.48.10.241
+  User ubuntu
+  IdentityFile /home/badr/docker-tuto/springboot-react/terraform/bastion-key.pem
+
+Host master
+  HostName 10.0.1.218
+  User ubuntu
+  IdentityFile /home/badr/docker-tuto/springboot-react/terraform/k8s-cluster-key.pem
+  ProxyJump bastion
+
+Host slave1
+  HostName 10.0.1.202
+  User ubuntu
+  IdentityFile /home/badr/docker-tuto/springboot-react/terraform/k8s-cluster-key.pem
+  ProxyJump bastion
+
+Host slave2
+  HostName 10.0.1.78
+  User ubuntu
+  IdentityFile /home/badr/docker-tuto/springboot-react/terraform/k8s-cluster-key.pem
+  ProxyJump bastion
