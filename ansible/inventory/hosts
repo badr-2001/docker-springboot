@@ -1,11 +1,16 @@
-[master_node]
-master
-
 [bastion]
 bastion
 
+[master_node]
+master
+
+[slave_node]
+slave1
+slave2
+
 [private:children]
 master_node
+slave_node
 
 [private:vars]
 ansible_user=ubuntu
