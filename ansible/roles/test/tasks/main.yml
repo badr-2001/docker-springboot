@@ -1,0 +1,12 @@
+---
+- name: Install Nginx on Ubuntu/Debian
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Ensure Nginx is running and enabled
+  service:
+    name: nginx
+    state: started
+    enabled: yes

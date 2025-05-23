@@ -1,0 +1,8 @@
+---
+- name: Copy bastion-key.pem to ~/.ssh on bastion
+  copy:
+    src: /home/badr/docker-tuto/springboot-react/terraform/k8s-cluster-key.pem
+    dest: /home/ubuntu/.ssh/k8s-cluster-key.pem
+    owner: ubuntu
+    group: ubuntu
+    mode: '0400'
