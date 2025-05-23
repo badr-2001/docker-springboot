@@ -1,0 +1,6 @@
+---
+- name: Install nginx on master node
+  hosts: master_node
+  become: true
+  roles:
+    - test

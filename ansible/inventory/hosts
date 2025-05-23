@@ -1,0 +1,12 @@
+[master_node]
+master
+
+[bastion]
+bastion
+
+[private:children]
+master_node
+
+[private:vars]
+ansible_user=ubuntu
+ansible_ssh_common_args='-F /home/badr/.ssh/config'

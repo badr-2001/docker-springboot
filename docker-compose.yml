@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  backend:
+    container_name: backend
+    image: badr200199/backend
+    ports:
+      - "9001:9001"
+    
+
+  frontend:
+    container_name: frontend
+    image: badr200199/front_demo
+    ports: 
+      - "3000:3000"
+
+volumes:
+  postgres: {}
+
