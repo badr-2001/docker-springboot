@@ -1,0 +1,126 @@
+---
+- name: Install Docker and Kubernetes dependencies on all nodes
+  hosts: private
+  become: true
+
+  vars:
+    k8s_apt_key_url: "https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key"
+    k8s_repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+
+  tasks:
+    - name: Disable swap
+      shell: |
+        swapoff -a
+        sed -i '/ swap / s/^/#/' /etc/fstab
+      args:
+        warn: false
+
+    - name: Load kernel modules
+      block:
+        - name: Create modules-load config
+          copy:
+            dest: /etc/modules-load.d/k8s.conf
+            content: |
+              overlay
+              br_netfilter
+
+        - name: Load modules
+          shell: |
+            modprobe overlay
+            modprobe br_netfilter
+
+    - name: Set sysctl params for Kubernetes
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+
+    - name: Apply sysctl settings
+      command: sysctl --system
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gpg
+        state: present
+        update_cache: yes
+
+    - name: Add Kubernetes GPG key
+      shell: |
+        mkdir -p /etc/apt/keyrings
+        curl -fsSL {{ k8s_apt_key_url }} | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Add Kubernetes APT repository
+      apt_repository:
+        repo: "{{ k8s_repo }}"
+        filename: kubernetes
+        state: present
+
+    - name: Install kubelet, kubeadm, kubectl
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+        update_cache: yes
+
+    - name: Hold Kubernetes packages
+      shell: apt-mark hold kubelet kubeadm kubectl
+
+- name: Initialize Kubernetes on master
+  hosts: master_node
+  become: true
+
+  tasks:
+    - name: Initialize Kubernetes cluster (ignore low memory preflight check)
+      command: kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=Mem
+      register: kubeadm_init
+      args:
+        creates: /etc/kubernetes/admin.conf
+
+    - name: Save join command to a file
+      copy:
+        content: "{{ kubeadm_init.stdout_lines | select('search', 'kubeadm join') | list | join(' && ') }}"
+        dest: /home/ubuntu/kubeadm_join.sh
+        mode: '0755'
+
+    - name: Set up kubectl for root user
+      shell: |
+        mkdir -p /root/.kube
+        cp -f /etc/kubernetes/admin.conf /root/.kube/config
+        chown root:root /root/.kube/config
+
+    - name: Apply Flannel CNI
+      command: kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+      args:
+        warn: false
+        creates: /etc/cni/net.d/10-flannel.conflist
+
+    - name: Allow master to schedule pods
+      shell: kubectl taint nodes --all node-role.kubernetes.io/control-plane- || true
+      args:
+        executable: /bin/bash
+
+- name: Join worker nodes to cluster
+  hosts: slave_node
+  become: true
+
+  tasks:
+    - name: Read join command from master node
+      slurp:
+        src: /home/ubuntu/kubeadm_join.sh
+      register: join_script
+      delegate_to: master
+
+    - name: Execute kubeadm join
+      shell: "bash -c '{{ join_script.content | b64decode | regex_replace('\n', ' ') }}'"
+      args:
+        creates: /etc/kubernetes/kubelet.conf
