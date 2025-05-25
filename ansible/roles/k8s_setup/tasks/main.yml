@@ -1,20 +1,9 @@
 ---
-- name: Install Worker Nodes Kubernetes Dependencies
-  include_tasks: install_k8s_dependencies_workers.yml
-  when: inventory_hostname in groups['private']
+# Always run the baseline deps on every node in [private]
+- include_tasks: dependencies.yml
 
-- name: Install Master Node Kubernetes Dependencies
-  include_tasks: install_k8s_dependencies_master.yml
-  when: inventory_hostname in groups['master_node']
+- include_tasks: master_setup.yml
+  when: "'master_node' in group_names"
 
-- name: Initialize Master Node
-  include_tasks: init_master_node.yml
-  when: inventory_hostname in groups['master_node']
-
-- name: Retrieve Join Command
-  include_tasks: get_join_command.yml
-  when: inventory_hostname in groups['master_node']
-
-- name: Join Worker Nodes to Cluster
-  include_tasks: join_workers.yml
-  when: inventory_hostname in groups['slave_node']
+- include_tasks: join_workers.yml
+  when: "'slave_node' in group_names"

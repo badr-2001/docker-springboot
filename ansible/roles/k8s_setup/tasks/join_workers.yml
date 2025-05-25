@@ -1,12 +1,24 @@
-- name: Wait for Kubernetes API server on master
+---
+# on the master, generate a join command
+- name: Retrieve Join Command
+  shell: kubeadm token create --print-join-command
+  register: join_command_raw
+  run_once: true
+  delegate_to: "{{ groups['master_node'][0] }}"
+
+- name: Set Join Command fact
+  set_fact:
+    kube_join_cmd: "{{ join_command_raw.stdout_lines[0] }}"
+
+# on each worker, wait for API and run the join
+- name: Wait for API on master
   wait_for:
-    host: "{{ hostvars['master'].ansible_default_ipv4.address }}"
+    host: "{{ hostvars[ groups['master_node'][0] ].ansible_default_ipv4.address }}"
     port: 6443
-    timeout: 30
+    timeout: 300
 
 - name: Join worker to cluster
-  shell: "{{ hostvars['master'].join_command }} >> node_joined.log"
+  shell: "{{ kube_join_cmd }} >> /home/ubuntu/node_joined.log"
   args:
     chdir: /home/ubuntu
-    creates: node_joined.log
-
+    creates: /home/ubuntu/node_joined.log
