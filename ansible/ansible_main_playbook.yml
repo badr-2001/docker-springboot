@@ -1,18 +1,10 @@
----
-- name: Copy public key to bastion
+- name: copy key to bastion
   hosts: bastion
   become: true
   roles:
-    - copy_key
+  - copy_key
 
-- name: Copy k8s-cluster-key.pem to ~/.ssh on bastion
-  hosts: bastion
-  become: true
-  tasks:
-    - name: Copy the private key to ~/.ssh
-      copy:
-        src: /home/badr/docker-tuto/springboot-react/terraform/k8s-cluster-key.pem
-        dest: /home/ubuntu/.ssh/k8s-cluster-key.pem
-        owner: ubuntu
-        group: ubuntu
-        mode: '0400'
+- hosts: private
+  become: yes
+  roles:
+  - k8s_setup

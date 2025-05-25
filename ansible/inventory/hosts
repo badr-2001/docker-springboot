@@ -15,3 +15,5 @@ slave_node
 [private:vars]
 ansible_user=ubuntu
 ansible_ssh_common_args='-F /home/badr/.ssh/config'
+ansible_python_interpreter=/usr/bin/python3
+
