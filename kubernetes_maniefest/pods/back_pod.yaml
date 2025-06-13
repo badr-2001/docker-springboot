@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spring-back
+spec:
+  containers:
+  - name: backend
+    image: badr200199/backend
+    ports:
+    - containerPort: 9001
