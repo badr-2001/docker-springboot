@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-svc
+spec:
+  selector:
+    name: spring-back
+  ports:
+  - protocol: TCP
+    port: 9001
+    targetPort: 9001

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: react-front
+spec:
+  containers:
+  - name: front
+    image: badr200199/front_demo
+    ports:
+    - containerPort: 3000
