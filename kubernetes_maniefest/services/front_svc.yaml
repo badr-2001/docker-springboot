@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: front-svc
 spec:
+  type: NodePort
   selector:
     name: react-front
   ports:
-  - protocol: TCP
+  - targetPort: 3000
     port: 3000
-    targetPort: 3000
+    nodePort: 30007
