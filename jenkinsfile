@@ -36,6 +36,8 @@ pipeline {
             steps {
                 echo "Building .............."
                 sh 'pwd'
+                sh 'ls'
+                sh 'tree -L 3'
                 sh 'docker build -t badr200199/front_demo dockerfile-front'
                 sh 'docker build -t badr200199/backend .'
                 sh 'docker build -t badr200199/db dockerfile-postgress'
