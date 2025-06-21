@@ -32,6 +32,12 @@ pipeline {
             }
         }
 
+         stage('Debug: Show Dockerfile') {
+    steps {
+        sh 'cat Dockerfile'  // or dockerfile-front if you're using that
+    }
+}
+
         stage("Build Docker Images") {
             steps {
                 echo "Building DOCKER IMAGES .............."
@@ -45,10 +51,6 @@ pipeline {
                 sh 'docker images'
             }
     }
-    stage('Debug: Show Dockerfile') {
-    steps {
-        sh 'cat Dockerfile'  // or dockerfile-front if you're using that
-    }
-}
+   
 }
 }
