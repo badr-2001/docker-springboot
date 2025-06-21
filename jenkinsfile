@@ -2,12 +2,10 @@ pipeline {
     agent any
 
     triggers {
-        // Webhook-based trigger from GitHub
         githubPush()
     }
 
     environment {
-        // GitHub credentials for repo access
         GITHUB_CREDENTIALS = 'github-crd'
     }
 
@@ -34,9 +32,12 @@ pipeline {
             }
         }
 
-        stage('Done') {
+        stage("Build Docker Images") {
             steps {
-                echo 'Build and tests completed successfully.'
+                echo "Building .............."
+                sh 'docker build -t badr200199/front_demo dockerfile-front'
+                sh 'docker build -t badr200199/backend .'
+                sh 'docker build -t badr200199/db dockerfile-postgress'
             }
         }
     }
