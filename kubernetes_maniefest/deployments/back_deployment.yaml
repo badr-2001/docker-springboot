@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-back
+  labels:
+    name: spring-back
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spring-back
+  template:
+    metadata:
+      labels:
+        app: spring-back
+    spec:
+      containers:
+      - name: backend
+        image: elasraouib/backend:v26
+        ports:
+        - containerPort: 9001
