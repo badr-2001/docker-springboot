@@ -1,10 +1,10 @@
 ---
 
 server:
-  port: 8080
+  port: 9001
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/test?currentSchema=demo
+    url: jdbc:postgresql://db-svc:5432/test?currentSchema=demo
     username: user
     password: password
