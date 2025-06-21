@@ -8,7 +8,9 @@ pipeline {
     environment {
         GITHUB_CREDENTIALS = 'github-crd'
     }
-stage('Clean workspace and pull latest') {
+
+    stages {
+        stage('Clean workspace and pull latest') {
     steps {
         deleteDir()       // clears the workspace
         checkout([
@@ -21,7 +23,6 @@ stage('Clean workspace and pull latest') {
         ])
     }
 }
-    stages {
         stage('Clone Repository') {
             steps {
                 git branch: 'master',
