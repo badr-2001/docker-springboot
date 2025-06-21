@@ -3,6 +3,6 @@ terraform {
     bucket         = "tksterraformstate-eunorth"
     key            = "terraform.tfstate"
     dynamodb_table = "terraform-state-lock"
-    region         = "eu-north-1"
+    region         = var.region
   }
 }

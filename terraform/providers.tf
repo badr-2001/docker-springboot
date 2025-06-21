@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region                   = "eu-north-1"
+  region                   = var.region
   shared_credentials_files = ["~/.aws/credentials"]
   profile                  = "badr"
 }

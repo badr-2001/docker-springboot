@@ -1,4 +1,3 @@
-# ---------------------- Outputs ----------------------
 output "master_node_private_ip" {
   value = aws_instance.master_node.private_ip
 }
