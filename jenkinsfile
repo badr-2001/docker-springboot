@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    triggers {
+        // Webhook-based trigger from GitHub
+        githubPush()
+    }
+
+    environment {
+        // GitHub credentials for repo access
+        GITHUB_CREDENTIALS = 'github-crd'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'master',
+                    credentialsId: "${env.GITHUB_CREDENTIALS}",
+                    url: 'https://github.com/badr-2001/docker-springboot.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                echo 'Running Maven build...'
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running Maven tests...'
+                sh 'mvn test'
+            }
+        }
+
+        stage('Done') {
+            steps {
+                echo 'Build and tests completed successfully.'
+            }
+        }
+    }
+}
