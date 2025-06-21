@@ -55,9 +55,9 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 echo "Building DOCKER IMAGES .............."
-                sh 'docker build -f dockerfile-front -t badr200199/front_demo .'
-                sh 'docker build --no-cache -t badr200199/backend .'
-                sh 'docker build -f dockerfile-postgress -t badr200199/db .'
+                sh 'docker build -f dockerfile-front -t elasraouib/front_demo .'
+                sh 'docker build --no-cache -t elasraouib/backend .'
+                sh 'docker build -f dockerfile-postgress -t elasraouib/db .'
             }
         }
 
@@ -65,9 +65,9 @@ pipeline {
             steps{
             echo "Pushing to Dockerhub ......."
             sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-            sh 'docker push badr200199/front_demo'
-            sh 'docker push badr200199/backend'
-            sh 'docker push badr200199/db'
+            sh 'docker push elasraouib/front_demo'
+            sh 'docker push elasraouib/backend'
+            sh 'docker push elasraouib/db'
         }}
 
         
