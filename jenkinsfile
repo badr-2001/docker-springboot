@@ -11,23 +11,16 @@ pipeline {
 
     stages {
         stage('Clean workspace and pull latest') {
-    steps {
-        deleteDir()       // clears the workspace
-        checkout([
-            $class: 'GitSCM',
-            branches: [[name: '*/k8s']],
-            userRemoteConfigs: [[
-                url: 'https://github.com/badr-2001/docker-springboot.git',
-                credentialsId: 'github-crd'
-            ]]
-        ])
-    }
-}
-        stage('Clone Repository') {
             steps {
-                git branch: 'master',
-                    credentialsId: "${env.GITHUB_CREDENTIALS}",
-                    url: 'https://github.com/badr-2001/docker-springboot.git'
+                deleteDir()
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/k8s']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/badr-2001/docker-springboot.git',
+                        credentialsId: "${env.GITHUB_CREDENTIALS}"
+                    ]]
+                ])
             }
         }
 
@@ -45,25 +38,25 @@ pipeline {
             }
         }
 
-         stage('Debug: Show Dockerfile') {
-    steps {
-        sh 'cat Dockerfile'  // or dockerfile-front if you're using that
-    }
-}
+        stage('Debug: Show Dockerfile') {
+            steps {
+                sh 'cat Dockerfile'
+            }
+        }
 
-        stage("Build Docker Images") {
+        stage('Build Docker Images') {
             steps {
                 echo "Building DOCKER IMAGES .............."
                 sh 'docker build -f dockerfile-front -t badr200199/front_demo .'
-                sh 'docker build -t badr200199/backend .'
-                sh 'docker build -f dockerfile-postgress -t badr200199/db . '
+                sh 'docker build --no-cache -t badr200199/backend .'
+                sh 'docker build -f dockerfile-postgress -t badr200199/db .'
             }
         }
-        stage("check if Docker Images are there"){
-            steps{
+
+        stage("Check if Docker Images are there") {
+            steps {
                 sh 'docker images'
             }
+        }
     }
-   
-}
 }
