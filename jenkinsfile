@@ -35,6 +35,7 @@ pipeline {
         stage("Build Docker Images") {
             steps {
                 echo "Building .............."
+                sh 'pwd'
                 sh 'docker build -t badr200199/front_demo dockerfile-front'
                 sh 'docker build -t badr200199/backend .'
                 sh 'docker build -t badr200199/db dockerfile-postgress'
