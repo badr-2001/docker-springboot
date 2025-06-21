@@ -3,9 +3,11 @@ kind: Service
 metadata:
   name: back-svc
 spec:
+  type: NodePort
   selector:
     name: spring-back
   ports:
   - protocol: TCP
     port: 9001
     targetPort: 9001
+    nodePort: 30008

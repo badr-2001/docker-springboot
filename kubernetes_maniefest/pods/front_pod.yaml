@@ -7,6 +7,7 @@ metadata:
 spec:
   containers:
   - name: front
-    image: badr200199/front_demo
+    image: elasraouib/front_demo:v26
     ports:
     - containerPort: 3000
+    imagePullPolicy: Always

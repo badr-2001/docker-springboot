@@ -7,6 +7,6 @@ metadata:
 spec:
   containers:
   - name: backend
-    image: badr200199/backend
+    image: elasraouib/backend:v26
     ports:
     - containerPort: 9001
