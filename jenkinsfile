@@ -34,12 +34,10 @@ pipeline {
 
         stage("Build Docker Images") {
             steps {
-                echo "Building .............."
-                sh 'pwd'
-                sh 'ls'
-                sh 'docker build -t badr200199/front_demo dockerfile-front'
+                echo "Building DOCKER IMAGES .............."
+                sh 'docker build -f dockerfile-front -t badr200199/front_demo .'
                 sh 'docker build -t badr200199/backend .'
-                sh 'docker build -t badr200199/db dockerfile-postgress'
+                sh 'docker build -f dockerfile-postgress -t badr200199/db . '
             }
         }
     }
