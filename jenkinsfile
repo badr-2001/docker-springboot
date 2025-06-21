@@ -40,9 +40,9 @@ pipeline {
                 sh 'docker build -f dockerfile-postgress -t badr200199/db . '
             }
         }
-        stage("check if Docker Images are there")
+        stage("check if Docker Images are there"){
             steps{
                 sh 'docker images'
             }
-    }
+    }}
 }
