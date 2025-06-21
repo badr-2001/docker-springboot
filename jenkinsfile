@@ -44,5 +44,11 @@ pipeline {
             steps{
                 sh 'docker images'
             }
-    }}
+    }
+    stage('Debug: Show Dockerfile') {
+    steps {
+        sh 'cat Dockerfile'  // or dockerfile-front if you're using that
+    }
+}
+}
 }
