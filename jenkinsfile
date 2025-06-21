@@ -8,12 +8,13 @@ pipeline {
     environment {
         GITHUB_CREDENTIALS = 'github-crd'
         DOCKERHUB_CREDENTIALS = credentials('docker-crd')
-
+        BUILD_TAG_NUM = "v${BUILD_NUMBER}"
     }
 
     stages {
         stage('Clean workspace and pull latest') {
             steps {
+                echo '[INFO] Cleaning workspace and pulling latest code...'
                 deleteDir()
                 checkout([
                     $class: 'GitSCM',
@@ -26,50 +27,51 @@ pipeline {
             }
         }
 
-        stage('compile with Maven') {
+        stage('Compile with Maven') {
             steps {
-                echo 'Running Maven build...'
+                echo '[INFO] Running Maven compile...'
                 sh 'mvn clean compile'
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo 'Running Maven tests...'
+                echo '[INFO] Running unit tests...'
                 sh 'mvn test'
             }
         }
+
         stage('Build with Maven') {
-    steps {
-        echo 'Running Maven build...'
-        sh 'mvn clean package -DskipTests'  
-    }
-}
+            steps {
+                echo '[INFO] Building JAR package...'
+                sh 'mvn clean package -DskipTests'
+            }
+        }
 
         stage('Debug: Show Dockerfile') {
             steps {
+                echo '[DEBUG] Displaying Dockerfile content...'
                 sh 'cat Dockerfile'
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                echo "Building DOCKER IMAGES .............."
-                sh 'docker build -f dockerfile-front -t elasraouib/front_demo .'
-                sh 'docker build --no-cache -t elasraouib/backend .'
-                sh 'docker build -f dockerfile-postgress -t elasraouib/db .'
+                echo "[INFO] Building Docker images with tag: ${BUILD_TAG_NUM}"
+                sh "docker build -f dockerfile-front -t elasraouib/front_demo:${BUILD_TAG_NUM} ."
+                sh "docker build --no-cache -t elasraouib/backend:${BUILD_TAG_NUM} ."
+                sh "docker build -f dockerfile-postgress -t elasraouib/db:${BUILD_TAG_NUM} ."
             }
         }
 
-        stage("Push to Dockerhub"){
-            steps{
-            echo "Pushing to Dockerhub ......."
-            sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-            sh 'docker push elasraouib/front_demo'
-            sh 'docker push elasraouib/backend'
-            sh 'docker push elasraouib/db'
-        }}
-
-        
+        stage("Push to Dockerhub") {
+            steps {
+                echo "[INFO] Pushing Docker images with tag: ${BUILD_TAG_NUM}"
+                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                sh "docker push elasraouib/front_demo:${BUILD_TAG_NUM}"
+                sh "docker push elasraouib/backend:${BUILD_TAG_NUM}"
+                sh "docker push elasraouib/db:${BUILD_TAG_NUM}"
+            }
+        }
     }
 }
